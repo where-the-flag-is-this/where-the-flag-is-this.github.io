@@ -1,20 +1,23 @@
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/HelloWorld.vue'
+import "leaflet/dist/leaflet.css";
+import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
+import { ref } from "vue";
+import customCRS from "./customCRS";
+
+const zoom = ref(2)
+const map = ref();
+const crs = customCRS;
+function initMap(mapObj) {
+  map.value = mapObj;
+}
 </script>
 
 <template>
-  <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" />
+  <div style="height:600px; width:800px">
+    <l-map id="root" @ready="initMap" :crs="crs" class="rounded-b-lg" v-model="zoom" v-model:zoom="zoom"
+      :center="[47.41322, -1.219482]" :options="{ attributionControl: false }" :min-zoom="1" :max-zoom="18">
+      <l-tile-layer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base"
+        name="OpenStreetMap"></l-tile-layer>
+    </l-map>
+  </div>
 </template>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
