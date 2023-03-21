@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - github-action
 jobs:
   build_vue:
     runs-on: ubuntu-latest
