@@ -82,8 +82,8 @@ const guess = () => {
       <l-map id="root" @ready="initMap" :crs="crs" v-model="zoom" v-model:zoom="zoom" :center="[0, 0]"
         :options="{ attributionControl: false }" :min-zoom="1" :max-zoom="18">
         <l-marker :lat-lng="markerPosition" />
-        <l-tile-layer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base"
-          name="OpenStreetMap"></l-tile-layer>
+        <l-tile-layer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap"
+          :no-wrap="true" />
         <l-geo-json ref="placePolygon" :geojson="countryGeoJson" :visible="true" />
       </l-map>
     </div>
