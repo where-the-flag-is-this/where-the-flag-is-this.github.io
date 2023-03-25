@@ -5,7 +5,17 @@ import { ref, computed } from "vue";
 import { CRS, latLng } from "leaflet";
 import allPlaces from "./assets/allPlaces.json"
 
-const zoom = ref(2)
+function shuffleArray(array: Array<any>) {
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+}
+
+shuffleArray(allPlaces["features"])
+const gameState = ref<"none" | "won" | "lose" | "correctRound" | "ongoingRound">("none")
 const map = ref();
 const crs = CRS.Base;
 const markerPosition = ref(latLng(0, 0))
@@ -21,22 +31,8 @@ function initMap(mapObj) {
 }
 
 const countryGeoJson = computed(() => allPlaces["features"][currentIndex.value])
-// {
-//   "type": "Feature",
-//   "properties": { "party": "Republican" },
-//   "geometry": {
-//     "type": "Polygon",
-//     "coordinates": [[
-//       [-104.05, 48.99],
-//       [-97.22, 48.98],
-//       [-96.58, 45.94],
-//       [-104.03, 45.94]
-//     ]]
-//   }
-// }
 
-// allPlaces["features"][0]
-function pointInPolygon(x: number, y: number, polyPoints) {
+function pointInPolygon(x: number, y: number, polyPoints: Array<Array<number>>) {
   let inside = false;
   for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
     var xi = polyPoints[i][0], yi = polyPoints[i][1];
@@ -67,31 +63,69 @@ function isMarkerInsidePolygon() {
 const guess = () => {
   const isCorrect = isMarkerInsidePolygon()
   console.log(isCorrect)
-  if (isCorrect) {
+  if (gameState.value === "ongoingRound") {
+    if (isCorrect) {
+      gameState.value = "correctRound"
+
+    } else {
+      gameState.value = "lose"
+    }
+  } else if (gameState.value === "correctRound") {
     currentIndex.value++
+    gameState.value = "ongoingRound"
   } else {
+    gameState.value = "ongoingRound"
     currentIndex.value = 0
   }
 }
 
+const buttonText = computed(() => {
+  if (["won", "lose", "none"].indexOf(gameState.value) > -1) {
+    return "Start Game"
+  }
+  if (gameState.value === "correctRound") {
+    return "Next round"
+  }
+  if (gameState.value === "ongoingRound") {
+    return "Guess"
+  }
+  return "Unknown gamestate: " + gameState.value
+})
+
+const polyVisible = computed(() => {
+  if (["won", "lose", "correctRound"].indexOf(gameState.value) > -1)
+    return true
+  return false
+})
+const polyColor = computed(() => {
+  if (["won", "correctRound"].indexOf(gameState.value) > -1) {
+    return "#00FF00"
+  } else if (["lose"].indexOf(gameState.value) > -1) {
+    return "#FF0000"
+  }
+  return "#0000FF"
+})
 </script>
 
 <template>
   <div class="w-screen h-screen bg-green-400 flex">
     <div class="w-4/5 h-full overflow-x-hidden">
-      <l-map id="root" @ready="initMap" :crs="crs" v-model="zoom" v-model:zoom="zoom" :center="[0, 0]"
-        :options="{ attributionControl: false }" :min-zoom="1" :max-zoom="18">
+      <l-map id="root" @ready="initMap" :crs="crs" :zoom="2" :center="[0, 0]" :options="{ attributionControl: false }"
+        :min-zoom="1" :max-zoom="18">
         <l-marker :lat-lng="markerPosition" />
         <l-tile-layer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap"
           :no-wrap="true" />
-        <l-geo-json ref="placePolygon" :geojson="countryGeoJson" :visible="true" />
+        <l-geo-json ref="placePolygon" :geojson="countryGeoJson" :visible="polyVisible"
+          :optionsStyle="{ 'color': polyColor, 'fillColor': polyColor }" />
       </l-map>
     </div>
     <div class="w-1/5 h-full bg-slate-200 overflow-x-hidden">
-      <div class="flex flex-col justify-end h-full">
+      <div class="flex flex-col justify-between h-full">
         <p>Score: {{ currentIndex }}</p>
-        <p>Where is {{ countryGeoJson.properties.ADMIN }}</p>
-        <button class="bg-green-500 rounded-full m-2 text-3xl p-2" @click="guess()">Guess</button>
+        <svg width="100%" height="90">
+          <image :xlink:href="countryGeoJson.properties.FLAG_URL" width="100%" height="90" />
+        </svg>
+        <button class="bg-green-500 rounded-full m-2 text-3xl p-2" @click="guess()">{{ buttonText }}</button>
       </div>
     </div>
   </div>
