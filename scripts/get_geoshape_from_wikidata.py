@@ -34,6 +34,9 @@ query = WikiDataQueryResults(countries_information_query)
 
 country_list = query.load_as_list("countryLabel")
 country_df = query.load_as_dataframe()
+country_df = country_df.drop_duplicates(subset="countryLabel")
+
+
 sample_countries = country_df.sample(10, random_state=10)
 geoshapes = []
 for country in sample_countries.to_dict(orient="records"):
