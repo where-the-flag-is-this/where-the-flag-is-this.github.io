@@ -143,6 +143,9 @@ const polyColor = computed(() => {
         <div v-if="gameState === 'won'">
           YOU WON!
         </div>
+        <div v-if="gameState === 'correctRound'">
+          Correct!
+        </div>
         <div v-if="gameState === 'lose'">
           Sorry that is wrong, the correct answer was {{ countryGeoJson.properties.ADMIN }}.
           Try again
