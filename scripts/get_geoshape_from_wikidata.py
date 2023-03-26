@@ -10,18 +10,24 @@ random.seed(20)
 
 
 def get_geoshape(name_geoshape: str, extra_properties={}):
-    url = f"https://commons.wikimedia.org/w/api.php?action=query&prop=revisions&rvslots=*&rvprop=content&format=json&titles=Data:{name_geoshape}.map&origin=*"
+    try:
+        url = f"https://commons.wikimedia.org/w/api.php?action=query&prop=revisions&rvslots=*&rvprop=content&format=json&titles=Data:{name_geoshape}.map&origin=*"
 
-    response = requests.get(url)
+        response = requests.get(url)
 
-    data = response.json()["query"]["pages"]
-    geoshape = json.loads(
-        data[list(data.keys())[0]]["revisions"][0]["slots"]["main"]["*"]
-    )["data"]
-    geoshape_dict = geoshape["features"][0]
-    geoshape_dict["properties"] = {**geoshape_dict["properties"], **extra_properties}
+        data = response.json()["query"]["pages"]
+        geoshape = json.loads(
+            data[list(data.keys())[0]]["revisions"][0]["slots"]["main"]["*"]
+        )["data"]
+        geoshape_dict = geoshape["features"][0]
+        geoshape_dict["properties"] = {
+            **geoshape_dict["properties"],
+            **extra_properties,
+        }
 
-    return geoshape_dict
+        return geoshape_dict
+    except:
+        pass
 
 
 query = WikiDataQueryResults(countries_information_query)
@@ -31,12 +37,17 @@ country_df = query.load_as_dataframe()
 sample_countries = country_df.sample(10, random_state=10)
 geoshapes = []
 for country in sample_countries.to_dict(orient="records"):
-    geoshapes.append(get_geoshape(country["countryLabel"], country))
+    new_shape = get_geoshape(country["countryLabel"], country)
+    if new_shape:
+        geoshapes.append(new_shape)
 
 geoshapes_dict = {
     "type": "FeatureCollection",
 }
 geoshapes_dict["features"] = geoshapes
+
+with open("../src/assets/allPlaces.json", "w") as fp:
+    json.dump(geoshapes_dict, fp)
 
 gdf = gpd.GeoDataFrame.from_features(geoshapes_dict)
 
