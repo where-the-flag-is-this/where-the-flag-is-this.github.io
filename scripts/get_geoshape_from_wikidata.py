@@ -39,7 +39,7 @@ country_df = country_df.drop_duplicates(subset="countryLabel")
 
 sample_countries = country_df.sample(10, random_state=10)
 geoshapes = []
-for country in sample_countries.to_dict(orient="records"):
+for country in country_df.to_dict(orient="records"):
     new_shape = get_geoshape(country["countryLabel"], country)
     if new_shape:
         geoshapes.append(new_shape)
