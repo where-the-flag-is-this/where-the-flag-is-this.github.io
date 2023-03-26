@@ -3,18 +3,16 @@ import "leaflet/dist/leaflet.css";
 import { LMap, LTileLayer, LMarker, LGeoJson } from "@vue-leaflet/vue-leaflet";
 import { ref, computed } from "vue";
 import { CRS, latLng } from "leaflet";
-import allPlaces from "./assets/allPlaces.json"
+import _allPlaces from "./assets/allPlaces.json"
 
-function shuffleArray(array: Array<any>) {
-  for (var i = array.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
+const allPlaces = ref(_allPlaces)
+const shuffleAllPlaces = () => {
+  let _newFeatures = allPlaces.value.features
+  _newFeatures.sort(() => Math.random() - 0.5)
+  allPlaces.value.features = _newFeatures
 }
 
-shuffleArray(allPlaces.features)
+shuffleAllPlaces()
 const gameState = ref<"none" | "won" | "lose" | "correctRound" | "ongoingRound">("none")
 const map = ref();
 const crs = CRS.Base;
@@ -30,7 +28,7 @@ function initMap(mapObj) {
   });
 }
 
-const countryGeoJson = computed(() => allPlaces["features"][currentIndex.value])
+const countryGeoJson = computed(() => allPlaces.value["features"][currentIndex.value])
 
 function pointInPolygon(x: number, y: number, polyPoints: Array<Array<number>>) {
   let inside = false;
@@ -64,7 +62,7 @@ const guess = () => {
   if (gameState.value === "ongoingRound") {
     const isCorrect = isMarkerInsidePolygon()
     if (isCorrect) {
-      if (currentIndex.value == (allPlaces.features.length - 1)) {
+      if (currentIndex.value == (allPlaces.value.features.length - 1)) {
         gameState.value = "won"
       } else {
         gameState.value = "correctRound"
@@ -77,6 +75,7 @@ const guess = () => {
     gameState.value = "ongoingRound"
   } else {
     gameState.value = "ongoingRound"
+    shuffleAllPlaces()
     currentIndex.value = 0
   }
 }
@@ -126,7 +125,7 @@ const polyColor = computed(() => {
         <l-tile-layer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap"
           :no-wrap="true" />
         <l-geo-json ref="placePolygon" :geojson="countryGeoJson" :visible="polyVisible"
-          :optionsStyle="{ 'color': polyColor, 'fillColor': polyColor }" />
+          :optionsStyle="() => { return { 'color': polyColor, 'fillColor': polyColor } }" />
       </l-map>
     </div>
     <div class="w-1/5 h-full bg-slate-200 overflow-x-hidden">
@@ -143,6 +142,9 @@ const polyColor = computed(() => {
         </svg>
         <div v-if="gameState === 'won'">
           YOU WON!
+        </div>
+        <div v-if="gameState === 'correctRound'">
+          Correct!
         </div>
         <div v-if="gameState === 'lose'">
           Sorry that is wrong, the correct answer was {{ countryGeoJson.properties.ADMIN }}.
