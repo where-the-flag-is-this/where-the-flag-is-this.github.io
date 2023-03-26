@@ -138,7 +138,7 @@ const polyColor = computed(() => {
           <!--</image>:xlink:href="countryGeoJson.properties.FLAG_URL" -->
           <!--https://upload.wikimedia.org/wikipedia/commons/9/9b/Flag_of_Nepal.svg -->
           <!--https://upload.wikimedia.org/wikipedia/commons/6/6f/Flag_of_the_Central_African_Republic.svg" -->
-          <image :xlink:href="countryGeoJson.properties.FLAG_URL" class="absolute" width="100%" height="100%" />
+          <image :xlink:href="countryGeoJson.properties.flag" class="absolute" width="100%" height="100%" />
         </svg>
         <div v-if="gameState === 'won'">
           YOU WON!
