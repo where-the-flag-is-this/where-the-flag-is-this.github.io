@@ -145,10 +145,10 @@ const polyColor = computed(() => {
           YOU WON!
         </div>
         <div v-if="gameState === 'correctRound'">
-          Correct!
+          Correct! It was <b>{{ countryGeoJson.properties.ADMIN }}</b>
         </div>
         <div v-if="gameState === 'lose'">
-          Sorry that is wrong, the correct answer was {{ countryGeoJson.properties.ADMIN }}.
+          Sorry that is wrong, the correct answer was <b>{{ countryGeoJson.properties.ADMIN }}</b>.
           Try again
         </div>
         <button class="bg-green-500 rounded-full m-2 text-3xl p-2" @click="guess()">{{ buttonText }}</button>
