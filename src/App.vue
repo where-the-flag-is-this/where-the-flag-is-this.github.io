@@ -130,15 +130,16 @@ const polyColor = computed(() => {
     </div>
     <div class="w-1/5 h-full bg-slate-200 overflow-x-hidden">
       <div class="flex flex-col justify-between h-full">
-        <div class="flex flex-col">
+        <div class="flex flex-col pb-8">
           <h1 class="w-full flex justify-center text-4xl">Score</h1>
           <p class="w-full flex justify-center text-4xl">{{ score }}</p>
         </div>
-        <svg v-if="gameState === 'ongoingRound'" class="relative" viewBox="0 0 100 100">
+        <svg v-if="gameState === 'ongoingRound'" class="relative h-full" viewBox="0 0 100 100"
+          preserveAspectRatio="xMidYMid meet">
           <!--</image>:xlink:href="countryGeoJson.properties.FLAG_URL" -->
           <!--https://upload.wikimedia.org/wikipedia/commons/9/9b/Flag_of_Nepal.svg -->
           <!--https://upload.wikimedia.org/wikipedia/commons/6/6f/Flag_of_the_Central_African_Republic.svg" -->
-          <image :xlink:href="countryGeoJson.properties.FLAG_URL" class="absolute" width="100%" height="100%" />
+          <image :xlink:href="countryGeoJson.properties.flag" width="100%" />
         </svg>
         <div v-if="gameState === 'won'">
           YOU WON!
