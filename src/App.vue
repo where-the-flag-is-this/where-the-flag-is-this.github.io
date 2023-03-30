@@ -3,13 +3,17 @@ import "leaflet/dist/leaflet.css";
 import { LMap, LTileLayer, LMarker, LGeoJson } from "@vue-leaflet/vue-leaflet";
 import { ref, computed } from "vue";
 import { CRS, latLng } from "leaflet";
-import _allPlaces from "./assets/allPlaces.json"
 
-const allPlaces = ref(_allPlaces)
+import { storeToRefs } from 'pinia';
+import { useGameStateStore } from './stores/gameState';
+
+const { places } = storeToRefs(useGameStateStore());
+
+const allPlaces = places
 const shuffleAllPlaces = () => {
-  let _newFeatures = allPlaces.value.features
+  let _newFeatures = allPlaces.value
   _newFeatures.sort(() => Math.random() - 0.5)
-  allPlaces.value.features = _newFeatures
+  allPlaces.value = _newFeatures
 }
 
 shuffleAllPlaces()
@@ -28,7 +32,7 @@ function initMap(mapObj) {
   });
 }
 
-const countryGeoJson = computed(() => allPlaces.value["features"][currentIndex.value])
+const currentPlace = computed(() => places.value[currentIndex.value])
 
 function pointInPolygon(x: number, y: number, polyPoints: Array<Array<number>>) {
   let inside = false;
@@ -44,12 +48,12 @@ function pointInPolygon(x: number, y: number, polyPoints: Array<Array<number>>) 
 }
 function isMarkerInsidePolygon() {
   const x = markerPosition.value.lng, y = markerPosition.value.lat;
-  if (countryGeoJson.value.geometry.type == "Polygon") {
-    const polyPoints = countryGeoJson.value.geometry.coordinates[0];
+  if (currentPlace.value.geometry.type == "Polygon") {
+    const polyPoints = currentPlace.value.geometry.coordinates[0];
     return pointInPolygon(x, y, polyPoints)
-  } else if (countryGeoJson.value.geometry.type == "MultiPolygon") {
-    for (var i = 0; i < countryGeoJson.value.geometry.coordinates.length; i++) {
-      const polyPoints = countryGeoJson.value.geometry.coordinates[i][0];
+  } else if (currentPlace.value.geometry.type == "MultiPolygon") {
+    for (var i = 0; i < currentPlace.value.geometry.coordinates.length; i++) {
+      const polyPoints = currentPlace.value.geometry.coordinates[i][0];
       if (pointInPolygon(x, y, polyPoints)) {
         return true
       }
@@ -62,7 +66,7 @@ const guess = () => {
   if (gameState.value === "ongoingRound") {
     const isCorrect = isMarkerInsidePolygon()
     if (isCorrect) {
-      if (currentIndex.value == (allPlaces.value.features.length - 1)) {
+      if (currentIndex.value == (allPlaces.value.length - 1)) {
         gameState.value = "won"
       } else {
         gameState.value = "correctRound"
@@ -124,7 +128,7 @@ const polyColor = computed(() => {
         <l-marker :lat-lng="markerPosition" />
         <l-tile-layer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap"
           :no-wrap="true" />
-        <l-geo-json ref="placePolygon" :geojson="countryGeoJson" :visible="polyVisible"
+        <l-geo-json ref="placePolygon" :geojson="currentPlace" :visible="polyVisible"
           :optionsStyle="() => { return { 'color': polyColor, 'fillColor': polyColor } }" />
       </l-map>
     </div>
@@ -136,19 +140,16 @@ const polyColor = computed(() => {
         </div>
         <svg v-if="gameState === 'ongoingRound'" class="relative h-full" viewBox="0 0 100 100"
           preserveAspectRatio="xMidYMid meet">
-          <!--</image>:xlink:href="countryGeoJson.properties.FLAG_URL" -->
-          <!--https://upload.wikimedia.org/wikipedia/commons/9/9b/Flag_of_Nepal.svg -->
-          <!--https://upload.wikimedia.org/wikipedia/commons/6/6f/Flag_of_the_Central_African_Republic.svg" -->
-          <image :xlink:href="countryGeoJson.properties.flag" width="100%" />
+          <image :xlink:href="currentPlace.properties.flag" width="100%" />
         </svg>
         <div v-if="gameState === 'won'">
           YOU WON!
         </div>
         <div v-if="gameState === 'correctRound'">
-          Correct! It was <b>{{ countryGeoJson.properties.ADMIN }}</b>
+          Correct! It was <b>{{ currentPlace.properties.ADMIN }}</b>
         </div>
         <div v-if="gameState === 'lose'">
-          Sorry that is wrong, the correct answer was <b>{{ countryGeoJson.properties.ADMIN }}</b>.
+          Sorry that is wrong, the correct answer was <b>{{ currentPlace.properties.ADMIN }}</b>.
           Try again
         </div>
         <button class="bg-green-500 rounded-full m-2 text-3xl p-2" @click="guess()">{{ buttonText }}</button>
