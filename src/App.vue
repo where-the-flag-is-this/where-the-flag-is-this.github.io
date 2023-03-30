@@ -88,7 +88,7 @@ const score = computed(() => {
 </script>
 
 <template>
-  <div class="w-screen h-screen bg-green-400 flex">
+  <div class="w-screen h-screen bg-gray-300 flex">
     <div class="w-4/5 h-full overflow-x-hidden">
       <MapView />
     </div>
