@@ -22,13 +22,11 @@ const { gameState } = storeToRefs(gameStateStore);
       <MapView />
     </div>
     <div class="w-1/5 h-full bg-slate-200 overflow-x-hidden">
-      <div class="flex flex-col justify-between h-full">
-        <sidebarNewGame v-if="gameState === 'newGame'" />
-        <sidebarOngoing v-if="gameState === 'ongoingRound'" />
-        <sidebarWon v-if="gameState === 'won'" />
-        <sidebarCorrectRound v-if="gameState === 'correctRound'" />
-        <sidebarLose v-if="gameState === 'lose'" />
-      </div>
+      <sidebarNewGame v-if="gameState === 'newGame'" />
+      <sidebarOngoing v-if="gameState === 'ongoingRound'" />
+      <sidebarWon v-if="gameState === 'won'" />
+      <sidebarCorrectRound v-if="gameState === 'correctRound'" />
+      <sidebarLose v-if="gameState === 'lose'" />
     </div>
   </div>
 </template>

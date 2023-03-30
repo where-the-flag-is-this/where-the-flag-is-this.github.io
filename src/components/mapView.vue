@@ -18,7 +18,12 @@ function initMap(mapObj) {
     map.value = mapObj;
     map.value.doubleClickZoom.disable();
     map.value.addEventListener('click', function (ev) {
-        markerPosition.value = latLng(ev.latlng.lat, ev.latlng.lng)
+        let newLng = (ev.latlng.lng + 180)
+        newLng = newLng - Math.floor(newLng / 360) * 360
+        newLng -= 180
+        const newLat = ev.latlng.lat
+        markerPosition.value = latLng(newLat, newLng)
+        map.value.setView(latLng(newLat, newLng))
     });
 }
 
@@ -43,8 +48,7 @@ const polyColor = computed(() => {
     <l-map id="root" @ready="initMap" :crs="crs" :zoom="2" :center="[0, 0]" :options="{ attributionControl: false }"
         :min-zoom="1" :max-zoom="18">
         <l-marker :lat-lng="markerPosition" />
-        <l-tile-layer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap"
-            :no-wrap="true" />
+        <l-tile-layer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap" />
         <l-geo-json ref="placePolygon" :geojson="currentPlace" :visible="polyVisible"
             :optionsStyle="() => { return { 'color': polyColor, 'fillColor': polyColor } }" />
     </l-map>
