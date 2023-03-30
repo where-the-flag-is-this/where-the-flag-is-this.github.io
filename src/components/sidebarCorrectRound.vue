@@ -22,7 +22,7 @@ const score = computed(() => currentIndex.value + 1)
     <div class="flex flex-col justify-between h-full">
         <div class="flex flex-col pb-8">
             <h1 class="w-full flex justify-center text-4xl">Score</h1>
-            <p class="w-full flex justify-center text-4xl">{{ score }}</p>
+            <h3 class="w-full flex justify-center text-4xl">{{ score }}</h3>
         </div>
         <div>
             Correct! It was <b>{{ currentPlace.properties.countryLabel }}</b>

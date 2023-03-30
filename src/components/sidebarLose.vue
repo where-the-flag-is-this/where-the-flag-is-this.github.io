@@ -22,11 +22,11 @@ const score = computed(() => currentIndex.value)
     <div class="flex flex-col justify-between h-full">
         <div class="flex flex-col pb-8">
             <h1 class="w-full flex justify-center text-4xl">Score</h1>
-            <p class="w-full flex justify-center text-4xl">{{ score }}</p>
+            <h3 class="w-full flex justify-center text-4xl">{{ score }}</h3>
         </div>
-        <div>
+        <p>
             Sorry that is wrong, the correct answer was <b>{{ currentPlace.properties.countryLabel }}</b>. Try again
-        </div>
+        </p>
         <button class="bg-green-500 rounded-full m-2 text-3xl p-2" @click="nextRound()">New Game</button>
     </div>
 </template>

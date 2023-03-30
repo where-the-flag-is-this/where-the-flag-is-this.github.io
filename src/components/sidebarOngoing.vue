@@ -60,7 +60,7 @@ const score = computed(() => currentIndex.value)
     <div class="flex flex-col justify-between h-full">
         <div class="flex flex-col pb-8">
             <h1 class="w-full flex justify-center text-4xl">Score</h1>
-            <p class="w-full flex justify-center text-4xl">{{ score }}</p>
+            <h3 class="w-full flex justify-center text-4xl">{{ score }}</h3>
         </div>
         <svg class="relative h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
             <image :xlink:href="currentPlace.properties.flag" width="100%" />
