@@ -27,3 +27,4 @@ dist-ssr
 # Python
 */__pycache__
 *.pyc
+flag_guess_game.code-workspace

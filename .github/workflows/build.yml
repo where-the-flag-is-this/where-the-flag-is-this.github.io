@@ -13,6 +13,6 @@ jobs:
     - id: Build-Vue
       uses: xRealNeon/VuePagesAction@1.0.1
       with:
-        username: 'wagenrace'
-        reponame: 'flag_guess_game'
+        username: 'where-the-flag-is-this'
+        reponame: 'where-the-flag-is-this.github.io'
         token: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
