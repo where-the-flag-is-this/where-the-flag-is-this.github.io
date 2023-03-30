@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, Ref } from "vue";
+import { computed, ref, Ref } from "vue";
 import { Place } from "../types/Place";
 import allPlaces from "../assets/allPlaces.json"
 import { LatLng, latLng } from "leaflet";
@@ -7,8 +7,10 @@ import { LatLng, latLng } from "leaflet";
 export const useGameStateStore = defineStore('gameState', () => {
     const places: Ref<Place[]> = ref(allPlaces.features); // ref = state
     const currentIndex: Ref<number> = ref(0)
-    const gameState: Ref<"none" | "won" | "lose" | "correctRound" | "ongoingRound"> = ref("none")
+    const gameState: Ref<"newGame" | "won" | "lose" | "correctRound" | "ongoingRound"> = ref("newGame")
     const markerPosition: Ref<LatLng> = ref(latLng(0, 0))
+
+    const currentPlace = computed(() => places.value[currentIndex.value])
 
     const shuffleAllPlaces = () => {
         let _newFeatures = places.value
@@ -17,6 +19,6 @@ export const useGameStateStore = defineStore('gameState', () => {
     }
 
     return {
-        places, currentIndex, gameState, shuffleAllPlaces, markerPosition
+        places, currentIndex, gameState, shuffleAllPlaces, markerPosition, currentPlace
     }
 })
