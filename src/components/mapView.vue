@@ -53,3 +53,10 @@ const polyColor = computed(() => {
             :optionsStyle="() => { return { 'color': polyColor, 'fillColor': polyColor } }" />
     </l-map>
 </template>
+
+<style>
+.leaflet-container {
+    background: rgb(170 211 223);
+    outline: 0;
+}
+</style>
