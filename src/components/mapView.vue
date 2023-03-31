@@ -56,6 +56,7 @@ const polyColor = computed(() => {
 
 <style>
 .leaflet-container {
+    /* Make the background ocean color to reduce flashes */
     background: rgb(170 211 223);
     outline: 0;
 }
