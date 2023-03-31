@@ -11,7 +11,12 @@ export const useGameStateStore = defineStore('gameState', () => {
     const markerPosition: Ref<LatLng> = ref(latLng(0, 0))
 
     const currentPlace = computed(() => places.value[currentIndex.value])
-
+    // const currentShape = computed(() => {
+    //     response = await request(currentPlace.value.properties.geoshape)
+    // })
+    fetch(currentPlace.value.properties.geoshape)
+        .then((response) => response.json())
+        .then((data) => console.log(data));
     const shuffleAllPlaces = () => {
         let _newFeatures = places.value
         _newFeatures.sort(() => Math.random() - 0.5)
