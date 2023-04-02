@@ -69,14 +69,12 @@ class WikiDataQueryResults:
         return results
 
 countries_information_query = """
-SELECT ?country ?countryLabel ?countryDescription ?flag ?location ?population ?area ?geoshape 
+SELECT ?countryLabel ?countryDescription ?flag ?location ?population ?area ?geoshape 
 WHERE 
 {
   ?country wdt:P31 wd:Q3624078. # select items with "country" classification
   FILTER NOT EXISTS {?country wdt:P31/wdt:P279* wd:Q1246}. # filter out recognized countries
   FILTER NOT EXISTS {?country wdt:P576 ?dissolved.} # filter out items with date of dissolution
-  FILTER (?country != wd:Q219060) # exclude Taiwan
-  FILTER (?country != wd:Q865) # exclude Palestine
   OPTIONAL { ?country wdt:P41 ?flag. } # get flag of the country, if any
   OPTIONAL { ?country wdt:P625 ?location. } # get location of the country, if any
   OPTIONAL { ?country wdt:P1082 ?population. } # get population of the country, if any
@@ -85,3 +83,12 @@ WHERE
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } # get label and description in English 
 }
 """
+
+def get_missing_items_query(item_qid = "Q4628"):
+    return """SELECT ?name ?description ?flag ?location  ?population ?area ?geoshape 
+    WHERE {""" +f"wd:{item_qid} wdt:P1082 ?population."+f"wd:{item_qid} wdt:P41 ?flag." +f"wd:{item_qid} rdfs:label ?name."+f"wd:{item_qid} wdt:P3896 ?geoshape."+f"wd:{item_qid} wdt:P2046 ?area."+f"wd:{item_qid} wdt:P625 ?location."+f"wd:{item_qid} schema:description ?description."+"""  
+        FILTER (LANG(?name) = 'en')
+        FILTER (LANG(?description) = 'en')
+        
+        SERVICE wikibase:label { bd:serviceParam wikibase:language 'en'. }
+        }"""
