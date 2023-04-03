@@ -5,7 +5,7 @@ import random
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from queries import WikiDataQueryResults, countries_information_query , get_missing_items_query
+from queries import WikiDataQueryResults, countries_information_query , get_missing_items_query , dutch_provinces_query
 
 random.seed(20)
 
@@ -47,20 +47,20 @@ def get_geoshape_by_url(url: str, extra_properties={}):
 
 
 
-query = WikiDataQueryResults(countries_information_query)
+query = WikiDataQueryResults(dutch_provinces_query)
 
 country_df = query.load_as_dataframe()
 country_df = country_df.drop_duplicates(subset="countryLabel")
 
 # Get missing Kingdom Countries
-missing_df_list = []
-for missing_qid in ["Q4628", "Q35", "Q223", "Q55"]: # Fareo islands, Denmark, Greenland, Netherlands
-    missing_query = WikiDataQueryResults(get_missing_items_query(missing_qid))
-    missing_df_list.append(missing_query.load_as_dataframe())
-missing_df = pd.concat(missing_df_list)
-missing_df = missing_df.rename(columns = {"name":"countryLabel", "description": "countryDescription"})
+# missing_df_list = []
+# for missing_qid in ["Q4628", "Q35", "Q223", "Q55"]: # Fareo islands, Denmark, Greenland, Netherlands
+#     missing_query = WikiDataQueryResults(get_missing_items_query(missing_qid))
+#     missing_df_list.append(missing_query.load_as_dataframe())
+# missing_df = pd.concat(missing_df_list)
+# missing_df = missing_df.rename(columns = {"name":"countryLabel", "description": "countryDescription"})
 
-country_df = pd.concat([country_df, missing_df])
+# country_df = pd.concat([country_df, missing_df])
 
 # + in the links does not work 
 country_df["geoshapeUrl"] = country_df.geoshape.str.replace("+", "_")
@@ -85,7 +85,7 @@ geoshapes_dict = {
 }
 geoshapes_dict["features"] = geoshapes
 
-with open("../src/assets/allPlaces.json", "w") as fp:
+with open(r"src/assets/allPlaces.json", "w") as fp:
     json.dump(geoshapes_dict, fp)
 
 gdf = gpd.GeoDataFrame.from_features(geoshapes_dict)

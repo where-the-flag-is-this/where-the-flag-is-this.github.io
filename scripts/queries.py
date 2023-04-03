@@ -92,3 +92,18 @@ def get_missing_items_query(item_qid = "Q4628"):
         
         SERVICE wikibase:label { bd:serviceParam wikibase:language 'en'. }
         }"""
+
+dutch_provinces_query = """
+SELECT ?countryLabel ?countryDescription ?flag ?location ?population ?area ?geoshape WHERE {
+  ?country wdt:P31 wd:Q134390. # sovereign state
+  ?country rdfs:label ?countryLabel filter (lang(?countryLabel) = "en").
+   OPTIONAL { ?country wdt:P41 ?flag. } # get flag of the country, if any
+  OPTIONAL { ?country wdt:P625 ?location. } # get location of the country, if any
+  OPTIONAL { ?country wdt:P1082 ?population. } # get population of the country, if any
+  OPTIONAL { ?country wdt:P2046 ?area. } # get area of the country, if any
+  OPTIONAL { ?country wdt:P3896 ?geoshape. } # get geoshape of the country, if any
+  SERVICE wikibase:label {
+    bd:serviceParam wikibase:language "en".
+  }
+}
+"""
