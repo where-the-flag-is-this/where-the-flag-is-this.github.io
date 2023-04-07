@@ -5,7 +5,7 @@ import random
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from queries import WikiDataQueryResults, countries_information_query , get_missing_items_query , dutch_provinces_query
+from queries import WikiDataQueryResults, countries_information_query , get_missing_items_query , dutch_provinces_query , usa_states_query , german_states_query,japan_prefectures_query
 
 random.seed(20)
 
@@ -47,7 +47,7 @@ def get_geoshape_by_url(url: str, extra_properties={}):
 
 
 
-query = WikiDataQueryResults(dutch_provinces_query)
+query = WikiDataQueryResults(japan_prefectures_query)
 
 country_df = query.load_as_dataframe()
 country_df = country_df.drop_duplicates(subset="countryLabel")

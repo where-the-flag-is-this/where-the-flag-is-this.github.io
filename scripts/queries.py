@@ -107,3 +107,62 @@ SELECT ?countryLabel ?countryDescription ?flag ?location ?population ?area ?geos
   }
 }
 """
+usa_states_query = """
+SELECT DISTINCT ?country ?countryLabel ?countryDescription ?flag ?location ?population ?area ?geoshape WHERE {
+  ?country wdt:P31 wd:Q35657. # sovereign state
+  ?country rdfs:label ?countryLabel filter (lang(?countryLabel) = "en").
+   OPTIONAL { ?country wdt:P41 ?flag. } # get flag of the country, if any
+  OPTIONAL { ?country wdt:P625 ?location. } # get location of the country, if any
+  OPTIONAL { ?country wdt:P1082 ?population. } # get population of the country, if any
+  OPTIONAL { ?country wdt:P2046 ?area. } # get area of the country, if any
+  OPTIONAL { ?country wdt:P3896 ?geoshape. } # get geoshape of the country, if any
+  SERVICE wikibase:label {
+    bd:serviceParam wikibase:language "en".
+  }
+}
+"""
+
+german_states_query = """
+SELECT DISTINCT ?country ?countryLabel ?countryDescription ?flag ?location ?population ?area ?geoshape WHERE {
+  ?country wdt:P31 wd:Q1221156. # sovereign state
+  ?country rdfs:label ?countryLabel filter (lang(?countryLabel) = "en").
+   OPTIONAL { ?country wdt:P41 ?flag. } # get flag of the country, if any
+  OPTIONAL { ?country wdt:P625 ?location. } # get location of the country, if any
+  OPTIONAL { ?country wdt:P1082 ?population. } # get population of the country, if any
+  OPTIONAL { ?country wdt:P2046 ?area. } # get area of the country, if any
+  OPTIONAL { ?country wdt:P3896 ?geoshape. } # get geoshape of the country, if any
+  SERVICE wikibase:label {
+    bd:serviceParam wikibase:language "en".
+  }
+}
+"""
+
+japan_prefectures_query = """
+SELECT DISTINCT ?country ?countryLabel ?countryDescription ?flag ?location ?population ?area ?geoshape WHERE {
+  ?country wdt:P31 wd:Q50337. # sovereign state
+  ?country rdfs:label ?countryLabel filter (lang(?countryLabel) = "en").
+   OPTIONAL { ?country wdt:P41 ?flag. } # get flag of the country, if any
+  OPTIONAL { ?country wdt:P625 ?location. } # get location of the country, if any
+  OPTIONAL { ?country wdt:P1082 ?population. } # get population of the country, if any
+  OPTIONAL { ?country wdt:P2046 ?area. } # get area of the country, if any
+  OPTIONAL { ?country wdt:P3896 ?geoshape. } # get geoshape of the country, if any
+  SERVICE wikibase:label {
+    bd:serviceParam wikibase:language "en".
+  }
+}
+"""
+
+
+first_divisions_country_query  = """
+SELECT ?divisionLabel ?division ?countryLabel WHERE {
+  ?division wdt:P279 wd:Q10864048. # sovereign state
+  ?division wdt:P17 ?country. 
+  SERVICE wikibase:label {
+    bd:serviceParam wikibase:language "en".
+  }
+}
+"""
+
+def get_flag_and_geoshape_query(sovereign_state_qid: str = "Q134390"):
+    
+    return "SELECT ?divisionLabel ?flag ?geoshape WHERE {?division wdt:P31 wd:" + sovereign_state_qid + ".  ?division rdfs:label ?divisionLabel filter (lang(?divisionLabel) = 'en'). OPTIONAL { ?division wdt:P41 ?flag. } OPTIONAL { ?division wdt:P3896 ?geoshape. } SERVICE wikibase:label { bd:serviceParam wikibase:language 'en'.}}"
