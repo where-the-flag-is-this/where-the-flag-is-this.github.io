@@ -4,6 +4,7 @@ import { computed } from "vue";
 
 import { storeToRefs } from 'pinia';
 import { useGameStateStore } from '../stores/gameState';
+import Score from "./score.vue"
 
 const gameStateStore = useGameStateStore()
 const { currentIndex, gameState, places } = storeToRefs(gameStateStore);
@@ -20,10 +21,7 @@ const score = computed(() => currentIndex.value + 1)
 
 <template>
     <div class="flex flex-col justify-between h-full">
-        <div class="flex flex-col pb-8">
-            <h1 class="w-full flex justify-center text-4xl">Score</h1>
-            <h3 class="w-full flex justify-center text-4xl">{{ score }}</h3>
-        </div>
+        <Score :score="score"/>
         <div>
             YOU WON!!! You got all {{ places.length }} correct!
         </div>
