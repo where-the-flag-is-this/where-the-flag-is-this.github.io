@@ -69,26 +69,60 @@ class WikiDataQueryResults:
         return results
 
 countries_information_query = """
-SELECT ?countryLabel ?countryDescription ?flag ?location ?population ?area ?geoshape 
-WHERE 
-{
-  ?country wdt:P31 wd:Q3624078. # select items with "country" classification
-  FILTER NOT EXISTS {?country wdt:P31/wdt:P279* wd:Q1246}. # filter out recognized countries
-  FILTER NOT EXISTS {?country wdt:P576 ?dissolved.} # filter out items with date of dissolution
-  OPTIONAL { ?country wdt:P41 ?flag. } # get flag of the country, if any
-  OPTIONAL { ?country wdt:P625 ?location. } # get location of the country, if any
-  OPTIONAL { ?country wdt:P1082 ?population. } # get population of the country, if any
-  OPTIONAL { ?country wdt:P2046 ?area. } # get area of the country, if any
-  OPTIONAL { ?country wdt:P3896 ?geoshape. } # get geoshape of the country, if any
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } # get label and description in English 
-}
-"""
+    SELECT 
+        ?countryLabel 
+        (MAX(?flags) as ?flag) 
+        (MAX(?locations) as ?location) 
+        (MAX(?populations) as ?population) 
+        (MAX(?areas) as ?area) 
+        (MAX(?geoshapes) as ?geoshape) 
+        (GROUP_CONCAT(DISTINCT ?continentLabel; separator=",") AS ?continents)
+
+    WHERE 
+    {
+    ?country wdt:P31 wd:Q3624078. # select items with "country" classification
+    FILTER NOT EXISTS {?country wdt:P31/wdt:P279* wd:Q1246}. # filter out recognized countries
+    FILTER NOT EXISTS {?country wdt:P576 ?dissolved.} # filter out items with date of dissolution
+    ?country wdt:P41 ?flags. # get flag of the country, if any
+    OPTIONAL { ?country wdt:P625 ?locations. } # get location of the country, if any
+    OPTIONAL { ?country wdt:P1082 ?populations. } # get population of the country, if any
+    OPTIONAL { ?country wdt:P2046 ?areas. } # get area of the country, if any
+    ?country wdt:P3896 ?geoshapes. # get geoshape of the country, if any
+    ?country wdt:P30 ?continent.   # Located in continent
+    ?continent wdt:P31 wd:Q5107.   # Continents
+    SERVICE wikibase:label { 
+        bd:serviceParam wikibase:language "en". 
+        ?country rdfs:label ?countryLabel .
+        ?continent rdfs:label ?continentLabel .
+    } # get label and description in English 
+    }
+    GROUP BY ?countryLabel
+    """
 
 def get_missing_items_query(item_qid = "Q4628"):
-    return """SELECT ?name ?description ?flag ?location  ?population ?area ?geoshape 
-    WHERE {""" +f"wd:{item_qid} wdt:P1082 ?population."+f"wd:{item_qid} wdt:P41 ?flag." +f"wd:{item_qid} rdfs:label ?name."+f"wd:{item_qid} wdt:P3896 ?geoshape."+f"wd:{item_qid} wdt:P2046 ?area."+f"wd:{item_qid} wdt:P625 ?location."+f"wd:{item_qid} schema:description ?description."+"""  
-        FILTER (LANG(?name) = 'en')
-        FILTER (LANG(?description) = 'en')
-        
-        SERVICE wikibase:label { bd:serviceParam wikibase:language 'en'. }
-        }"""
+    return f"""
+    SELECT 
+        ?countryLabel 
+        (MAX(?flags) as ?flag) 
+        (MAX(?locations) as ?location) 
+        (MAX(?populations) as ?population) 
+        (MAX(?areas) as ?area) 
+        (MAX(?geoshapes) as ?geoshape) 
+        (GROUP_CONCAT(DISTINCT ?continentLabel; separator=",") AS ?continents)
+    {{
+        wd:{item_qid} wdt:P1082 ?populations. 
+        wd:{item_qid} wdt:P41 ?flags. 
+        wd:{item_qid} rdfs:label ?names. 
+        wd:{item_qid} wdt:P3896 ?geoshapes. 
+        wd:{item_qid} wdt:P2046 ?areas. 
+        wd:{item_qid} wdt:P625 ?locations.
+        wd:{item_qid} wdt:P30 ?continent.
+
+        SERVICE wikibase:label {{ 
+            bd:serviceParam wikibase:language "en". # get label and description in English 
+            ?country rdfs:label ?countryLabel . # get label not Q-code
+            ?continent rdfs:label ?continentLabel . # get label not Q-code
+        }} 
+    }}
+    GROUP BY ?countryLabel
+"""

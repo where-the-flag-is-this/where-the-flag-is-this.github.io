@@ -58,7 +58,7 @@ for missing_qid in ["Q4628", "Q35", "Q223", "Q55"]: # Fareo islands, Denmark, Gr
     missing_query = WikiDataQueryResults(get_missing_items_query(missing_qid))
     missing_df_list.append(missing_query.load_as_dataframe())
 missing_df = pd.concat(missing_df_list)
-missing_df = missing_df.rename(columns = {"name":"countryLabel", "description": "countryDescription"})
+missing_df = missing_df.rename(columns = {"name":"countryLabel"})
 
 country_df = pd.concat([country_df, missing_df])
 
