@@ -1,8 +1,9 @@
 import sys
+from typing import Dict, List
+
 import pandas as pd
-from typing import List, Dict
-from pprint import pprint
-from SPARQLWrapper import SPARQLWrapper, JSON
+from SPARQLWrapper import JSON, SPARQLWrapper
+
 
 class WikiDataQueryResults:
     """
@@ -102,12 +103,12 @@ countries_information_query = """
 def get_missing_items_query(item_qid = "Q4628"):
     return f"""
     SELECT 
-        ?countryLabel 
+        (GROUP_CONCAT(DISTINCT ?names; separator=",") AS ?countryLabel)
         (MAX(?flags) as ?flag) 
         (MAX(?locations) as ?location) 
         (MAX(?populations) as ?population) 
         (MAX(?areas) as ?area) 
-        (MAX(?geoshapes) as ?geoshape) 
+        (MAX(?geoshapes) as ?geoshape)
         (GROUP_CONCAT(DISTINCT ?continentLabel; separator=",") AS ?continents)
     {{
         wd:{item_qid} wdt:P1082 ?populations. 
@@ -117,10 +118,10 @@ def get_missing_items_query(item_qid = "Q4628"):
         wd:{item_qid} wdt:P2046 ?areas. 
         wd:{item_qid} wdt:P625 ?locations.
         wd:{item_qid} wdt:P30 ?continent.
+        FILTER(lang(?names)='en')
 
         SERVICE wikibase:label {{ 
             bd:serviceParam wikibase:language "en". # get label and description in English 
-            ?country rdfs:label ?countryLabel . # get label not Q-code
             ?continent rdfs:label ?continentLabel . # get label not Q-code
         }} 
     }}
