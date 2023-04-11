@@ -1,11 +1,12 @@
-import requests
 import json
 import random
 
-import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from queries import WikiDataQueryResults, countries_information_query , get_missing_items_query
+import pandas as pd
+import requests
+from queries import (WikiDataQueryResults, countries_information_query,
+                     get_missing_items_query)
 
 random.seed(20)
 
