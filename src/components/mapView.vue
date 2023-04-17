@@ -49,7 +49,7 @@ const polyColor = computed(() => {
         :min-zoom="1" :max-zoom="18">
         <l-marker :lat-lng="markerPosition" />
         <l-tile-layer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap" />
-        <l-geo-json ref="placePolygon" :geojson="currentPlace" :visible="polyVisible"
+        <l-geo-json v-if="currentPlace" ref="placePolygon" :geojson="currentPlace" :visible="polyVisible"
             :optionsStyle="() => { return { 'color': polyColor, 'fillColor': polyColor } }" />
     </l-map>
 </template>
