@@ -21,10 +21,10 @@ const score = computed(() => currentIndex.value)
 
 <template>
     <div class="flex flex-col justify-between h-full">
-        <Score :score="score"/>
+        <Score :score="score" />
         <p>
             Sorry that is wrong, the correct answer was <b>{{ currentPlace.properties.countryLabel }}</b>. Try again
         </p>
-        <button class="bg-green-500 rounded-full m-2 text-3xl p-2" @click="nextRound()">New Game</button>
+        <button class="button" @click="nextRound()">New Game</button>
     </div>
 </template>

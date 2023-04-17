@@ -21,10 +21,10 @@ const score = computed(() => currentIndex.value + 1)
 
 <template>
     <div class="flex flex-col justify-between h-full">
-        <Score :score="score"/>
+        <Score :score="score" />
         <div>
             YOU WON!!! You got all {{ places.length }} correct!
         </div>
-        <button class="bg-green-500 rounded-full m-2 text-3xl p-2" @click="nextRound()">New Game</button>
+        <button class="button" @click="nextRound()">New Game</button>
     </div>
 </template>
