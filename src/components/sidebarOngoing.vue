@@ -53,7 +53,9 @@ const guess = () => {
     }
 }
 
+const hint = () => {console.log('This is a hint')}
 const score = computed(() => currentIndex.value)
+
 
 </script>
 
@@ -63,6 +65,7 @@ const score = computed(() => currentIndex.value)
         <svg class="relative h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
             <image :xlink:href="currentPlace.properties.flag" width="100%" />
         </svg>
+        <button class="button" @click="hint()">Hint</button>
         <button class="button" @click="guess()">Guess</button>
     </div>
 </template>
