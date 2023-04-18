@@ -6,4 +6,10 @@
   p {
     @apply mx-3;
   }
+  h1 {
+    @apply text-lg font-semibold m-1
+  }
+  .button {
+    @apply bg-green-500 rounded-full m-2 text-3xl p-2 disabled:bg-gray-400 disabled:text-gray-300
+  }
 }

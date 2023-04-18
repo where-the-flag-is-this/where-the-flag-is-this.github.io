@@ -59,10 +59,10 @@ const score = computed(() => currentIndex.value)
 
 <template>
     <div class="flex flex-col justify-between h-full">
-        <Score :score="score"/>
+        <Score :score="score" />
         <svg class="relative h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
             <image :xlink:href="currentPlace.properties.flag" width="100%" />
         </svg>
-        <button class="bg-green-500 rounded-full m-2 text-3xl p-2" @click="guess()">Guess</button>
+        <button class="button" @click="guess()">Guess</button>
     </div>
 </template>
