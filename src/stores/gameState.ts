@@ -8,6 +8,7 @@ export const useGameStateStore = defineStore('gameState', () => {
     const places: Ref<Place[]> = ref(allPlaces.features); // ref = state
     const currentIndex: Ref<number> = ref(0)
     const gameState: Ref<"newGame" | "won" | "lose" | "correctRound" | "ongoingRound"> = ref("newGame")
+    const hintState: Ref<boolean> = ref(false)
     const markerPosition: Ref<LatLng> = ref(latLng(0, 0))
 
     const currentPlace = computed(() => places.value[currentIndex.value])
@@ -19,6 +20,6 @@ export const useGameStateStore = defineStore('gameState', () => {
     }
 
     return {
-        places, currentIndex, gameState, shuffleAllPlaces, markerPosition, currentPlace
+        places, currentIndex, gameState,hintState, shuffleAllPlaces, markerPosition, currentPlace
     }
 })

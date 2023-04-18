@@ -9,7 +9,7 @@ import Hint from "./hint.vue"
 
 
 const gameStateStore = useGameStateStore()
-const { places, currentIndex, gameState, markerPosition } = storeToRefs(gameStateStore);
+const { places, currentIndex, gameState,hintState,  markerPosition } = storeToRefs(gameStateStore);
 
 
 const currentPlace = computed(() => places.value[currentIndex.value])
@@ -44,6 +44,7 @@ function isMarkerInsidePolygon() {
 
 const guess = () => {
     const isCorrect = isMarkerInsidePolygon()
+    hintState.value = false
     if (isCorrect) {
         if (currentIndex.value == (places.value.length - 1)) {
             gameState.value = "won"
@@ -56,7 +57,7 @@ const guess = () => {
 }
 
 
-const test = () => {console.log('This is a hint')}
+const getHint = () => {hintState.value = true}
 const hint = computed(() => currentPlace.value.properties.population)
 const score = computed(() => currentIndex.value)
 
@@ -70,7 +71,7 @@ const score = computed(() => currentIndex.value)
             <image :xlink:href="currentPlace.properties.flag" width="100%" />
         </svg>
         <Hint :hint="hint" />
-        <button class="button" @click="test()">Hint</button>
+        <button class="button" @click="getHint()">Hint</button>
         <button class="button" @click="guess()">Guess</button>
     </div>
 </template>
