@@ -5,6 +5,8 @@ import { computed } from "vue";
 import { storeToRefs } from 'pinia';
 import { useGameStateStore } from '../stores/gameState';
 import Score from "./score.vue"
+import Hint from "./hint.vue"
+
 
 const gameStateStore = useGameStateStore()
 const { places, currentIndex, gameState, markerPosition } = storeToRefs(gameStateStore);
@@ -53,7 +55,9 @@ const guess = () => {
     }
 }
 
-const hint = () => {console.log('This is a hint')}
+
+const test = () => {console.log('This is a hint')}
+const hint = computed(() => currentPlace.value.properties.population)
 const score = computed(() => currentIndex.value)
 
 
@@ -65,7 +69,8 @@ const score = computed(() => currentIndex.value)
         <svg class="relative h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
             <image :xlink:href="currentPlace.properties.flag" width="100%" />
         </svg>
-        <button class="button" @click="hint()">Hint</button>
+        <Hint :hint="hint" />
+        <button class="button" @click="test()">Hint</button>
         <button class="button" @click="guess()">Guess</button>
     </div>
 </template>
