@@ -2,6 +2,8 @@ type properties = {
     "flag": string;
     "geoshape": string;
     "countryLabel": string;
+    "population":string;
+    "area": string;
 }
 
 export type Place = {
