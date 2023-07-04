@@ -1,0 +1,5 @@
+geopandas ~= 0.13.2
+matplotlib ~= 3.7.1
+pandas ~= 2.0.3
+requests ~=2.27.1
+SPARQLWrapper ~= 2.0.0
