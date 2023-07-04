@@ -10,13 +10,17 @@ class WikiDataQueryResults:
     A class that can be used to query data from Wikidata using SPARQL and return the results as a Pandas DataFrame or a list
     of values for a specific key.
     """
+
     def __init__(self, query: str):
         """
         Initializes the WikiDataQueryResults object with a SPARQL query string.
 
         :param query: A SPARQL query string.
         """
-        self.user_agent = "WDQS-example Python/%s.%s" % (sys.version_info[0], sys.version_info[1])
+        self.user_agent = "WDQS-example Python/%s.%s" % (
+            sys.version_info[0],
+            sys.version_info[1],
+        )
         self.endpoint_url = "https://query.wikidata.org/sparql"
         self.sparql = SPARQLWrapper(self.endpoint_url, agent=self.user_agent)
         self.sparql.setQuery(query)
@@ -34,7 +38,7 @@ class WikiDataQueryResults:
         for result in results:
             new_result = {}
             for key in result:
-                new_result[key] = result[key]['value']
+                new_result[key] = result[key]["value"]
             new_results.append(new_result)
         return new_results
 
@@ -65,9 +69,10 @@ class WikiDataQueryResults:
         :return: A list of dictionaries, where each dictionary represents a result row and has keys corresponding to the
         variables in the SPARQL SELECT clause.
         """
-        results = self.sparql.queryAndConvert()['results']['bindings']
+        results = self.sparql.queryAndConvert()["results"]["bindings"]
         results = self.__transform2dicts(results)
         return results
+
 
 countries_information_query = """
     SELECT 
@@ -90,7 +95,7 @@ countries_information_query = """
     OPTIONAL { ?country wdt:P2046 ?areas. } # get area of the country, if any
     ?country wdt:P3896 ?geoshapes. # get geoshape of the country, if any
     ?country wdt:P30 ?continent.   # Located in continent
-    ?continent wdt:P31 wd:Q5107.   # Continents
+    # ?continent wdt:P31 wd:Q5107.   # Continents
     SERVICE wikibase:label { 
         bd:serviceParam wikibase:language "en". 
         ?country rdfs:label ?countryLabel .
@@ -100,7 +105,8 @@ countries_information_query = """
     GROUP BY ?countryLabel
     """
 
-def get_missing_items_query(item_qid = "Q4628"):
+
+def get_missing_items_query(item_qid="Q4628"):
     return f"""
     SELECT 
         (GROUP_CONCAT(DISTINCT ?names; separator=",") AS ?countryLabel)
