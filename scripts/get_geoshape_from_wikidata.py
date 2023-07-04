@@ -75,15 +75,19 @@ country_df["geoshapeUrl"] = country_df.geoshape.str.replace("+", "_")
 
 
 geoshapes = []
-for country in country_df.to_dict(orient="records"):
+for country in sorted(
+    country_df.to_dict(orient="records"), key=lambda i: i["countryLabel"]
+):
     new_shape = get_geoshape_by_url(country["geoshapeUrl"], country)
     if not new_shape:
         # Mongolia is weird and geoshape is different that the rest
         new_shape = get_geoshape_by_name(country["countryLabel"], country)
         print(country["countryLabel"])
-    
+
     # Turn continents into a list
-    new_shape['properties']['continents'] = new_shape['properties']['continents'].split(",")
+    new_shape["properties"]["continents"] = new_shape["properties"]["continents"].split(
+        ","
+    )
 
     if new_shape:
         geoshapes.append(new_shape)
@@ -96,7 +100,7 @@ geoshapes_dict = {
 geoshapes_dict["features"] = geoshapes
 
 with open("../src/assets/allPlaces.json", "w") as fp:
-    json.dump(geoshapes_dict, fp)
+    json.dump(geoshapes_dict, fp, indent=4)
 
 gdf = gpd.GeoDataFrame.from_features(geoshapes_dict)
 
