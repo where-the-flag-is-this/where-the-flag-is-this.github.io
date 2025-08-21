@@ -1,6 +1,6 @@
 import json
 import random
-
+import time
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -10,6 +10,7 @@ from queries import (
     countries_information_query,
     get_missing_items_query,
 )
+from tqdm import tqdm
 
 random.seed(20)
 
@@ -38,6 +39,9 @@ def get_geoshape_by_name(name_geoshape: str, extra_properties={}):
 def get_geoshape_by_url(url: str, extra_properties={}):
     try:
         r = requests.get(url)
+        if r.status_code == 429:
+            time.sleep(10)
+            r = requests.get(url)
         geoshape_dict = r.json()["data"]["features"][0]
         geoshape_dict["properties"] = {
             **geoshape_dict["properties"],
@@ -46,7 +50,7 @@ def get_geoshape_by_url(url: str, extra_properties={}):
 
         return geoshape_dict
     except:
-        print(url)
+        print(r.status_code, url)
         return
 
 
@@ -75,16 +79,17 @@ country_df["geoshapeUrl"] = country_df.geoshape.str.replace("+", "_")
 
 
 geoshapes = []
-for country in country_df.to_dict(orient="records"):
+countries = country_df.to_dict(orient="records")
+for country in tqdm(countries):
     new_shape = get_geoshape_by_url(country["geoshapeUrl"], country)
     if not new_shape:
         # Mongolia is weird and geoshape is different that the rest
         new_shape = get_geoshape_by_name(country["countryLabel"], country)
-        print(country["countryLabel"])
-    
-    # Turn continents into a list
-    new_shape['properties']['continents'] = new_shape['properties']['continents'].split(",")
 
+    # Turn continents into a list
+    new_shape["properties"]["continents"] = new_shape["properties"]["continents"].split(
+        ","
+    )
     if new_shape:
         geoshapes.append(new_shape)
 
