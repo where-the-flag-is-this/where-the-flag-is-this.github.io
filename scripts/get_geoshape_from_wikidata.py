@@ -14,6 +14,10 @@ from tqdm import tqdm
 
 random.seed(20)
 
+URL_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+}
+
 
 def get_geoshape_by_name(name_geoshape: str, extra_properties={}):
     try:
@@ -50,7 +54,7 @@ def get_geoshape_by_url(url: str, extra_properties={}):
 
         return geoshape_dict
     except:
-        print(r.status_code, url)
+        print(r.status_code, r.text, url)
         return
 
 
@@ -62,11 +66,12 @@ country_df = country_df.drop_duplicates(subset="countryLabel")
 # Get missing Kingdom Countries
 missing_df_list = []
 for missing_qid in [
-    "Q4628",
-    "Q35",
-    "Q223",
-    "Q55",
-]:  # Fareo islands, Denmark, Greenland, Netherlands
+    "Q4628",  # Fareo islands
+    "Q35",  # Denmark
+    "Q223",  # Greenland
+    "Q55",  # Netherlands
+    "Q712",  # Fiji
+]:
     missing_query = WikiDataQueryResults(get_missing_items_query(missing_qid))
     missing_df_list.append(missing_query.load_as_dataframe())
 missing_df = pd.concat(missing_df_list)
@@ -101,7 +106,7 @@ geoshapes_dict = {
 geoshapes_dict["features"] = geoshapes
 
 with open("../src/assets/allPlaces.json", "w") as fp:
-    json.dump(geoshapes_dict, fp)
+    json.dump(geoshapes_dict, fp, indicent=4)
 
 gdf = gpd.GeoDataFrame.from_features(geoshapes_dict)
 
