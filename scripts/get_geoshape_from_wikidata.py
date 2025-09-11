@@ -23,7 +23,7 @@ def get_geoshape_by_name(name_geoshape: str, extra_properties={}):
     try:
         url = f"https://commons.wikimedia.org/w/api.php?action=query&prop=revisions&rvslots=*&rvprop=content&format=json&titles=Data:{name_geoshape}.map&origin=*"
 
-        response = requests.get(url)
+        response = requests.get(url, headers=URL_HEADERS)
 
         data = response.json()["query"]["pages"]
         geoshape = json.loads(
@@ -42,10 +42,10 @@ def get_geoshape_by_name(name_geoshape: str, extra_properties={}):
 
 def get_geoshape_by_url(url: str, extra_properties={}):
     try:
-        r = requests.get(url)
+        r = requests.get(url, headers=URL_HEADERS)
         if r.status_code == 429:
             time.sleep(10)
-            r = requests.get(url)
+            r = requests.get(url, headers=URL_HEADERS)
         geoshape_dict = r.json()["data"]["features"][0]
         geoshape_dict["properties"] = {
             **geoshape_dict["properties"],
@@ -106,7 +106,7 @@ geoshapes_dict = {
 geoshapes_dict["features"] = geoshapes
 
 with open("../src/assets/allPlaces.json", "w") as fp:
-    json.dump(geoshapes_dict, fp, indicent=4)
+    json.dump(geoshapes_dict, fp, indent=4)
 
 gdf = gpd.GeoDataFrame.from_features(geoshapes_dict)
 
