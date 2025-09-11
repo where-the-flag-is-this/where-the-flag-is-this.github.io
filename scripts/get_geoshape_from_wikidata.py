@@ -106,7 +106,7 @@ geoshapes_dict = {
 geoshapes_dict["features"] = geoshapes
 
 with open("../src/assets/allPlaces.json", "w") as fp:
-    json.dump(geoshapes_dict, fp, indent=4)
+    json.dump(geoshapes_dict, fp)
 
 gdf = gpd.GeoDataFrame.from_features(geoshapes_dict)
 
