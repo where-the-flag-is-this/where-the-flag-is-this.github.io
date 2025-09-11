@@ -61,7 +61,6 @@ def get_geoshape_by_url(url: str, extra_properties={}):
 query = WikiDataQueryResults(countries_information_query)
 
 country_df = query.load_as_dataframe()
-country_df = country_df.drop_duplicates(subset="countryLabel")
 
 # Get missing Kingdom Countries
 missing_df_list = []
@@ -78,6 +77,7 @@ missing_df = pd.concat(missing_df_list)
 missing_df = missing_df.rename(columns={"name": "countryLabel"})
 
 country_df = pd.concat([country_df, missing_df])
+country_df = country_df.drop_duplicates(subset="countryLabel")
 
 # + in the links does not work
 country_df["geoshapeUrl"] = country_df.geoshape.str.replace("+", "_")

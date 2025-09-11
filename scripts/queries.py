@@ -103,18 +103,12 @@ def get_missing_items_query(item_qid="Q4628"):
     SELECT 
         (GROUP_CONCAT(DISTINCT ?names; separator=",") AS ?countryLabel)
         (MAX(?flags) as ?flag) 
-        (MAX(?locations) as ?location) 
-        (MAX(?populations) as ?population) 
-        (MAX(?areas) as ?area) 
         (MAX(?geoshapes) as ?geoshape)
         (GROUP_CONCAT(DISTINCT ?continentLabel; separator=",") AS ?continents)
     {{
-        wd:{item_qid} wdt:P1082 ?populations. 
         wd:{item_qid} wdt:P41 ?flags. 
         wd:{item_qid} rdfs:label ?names. 
         wd:{item_qid} wdt:P3896 ?geoshapes. 
-        wd:{item_qid} wdt:P2046 ?areas. 
-        wd:{item_qid} wdt:P625 ?locations.
         wd:{item_qid} wdt:P30 ?continent.
         FILTER(lang(?names)='en')
 
