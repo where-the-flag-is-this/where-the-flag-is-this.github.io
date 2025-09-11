@@ -32,9 +32,9 @@ function isMarkerInsidePolygon(): boolean {
 };
 
 function distanceMarkerToPolygon(): number {
+    // Returns distance in degrees
+    // This is a bit of bullshit given the earth is round and all, but should be fine for our purposes
     const x = markerPosition.value.lng, y = markerPosition.value.lat;
-    console.log("Marker position:", x, y)
-    console.log("Current place:", currentPlace.value)
     if (currentPlace.value.geometry.type == "Polygon") {
         const polyPoints = currentPlace.value.geometry.coordinates[0];
         return distanceToPolygon(x, y, polyPoints)
