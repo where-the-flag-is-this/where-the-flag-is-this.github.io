@@ -30,7 +30,7 @@ describe('distance to line base intersection line segment', () => {
         const x: number = 20, y: number = 0;
         const x1: number = 10, y1: number = 10, x2: number = 10, y2: number = 10;
         expect(distanceToLineSegmentSquared(x, y, x1, y1, x2, y2))
-            .toBeCloseTo(2001);
+            .toBeCloseTo(200);
     });
 });
 
