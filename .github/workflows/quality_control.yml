@@ -1,0 +1,17 @@
+name: Quality Control
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - master
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    name: Build Vue
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run Vitest
+      run: npx vitest run

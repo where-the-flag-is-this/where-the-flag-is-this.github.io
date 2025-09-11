@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Vue
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - name: Run Vitest
+      run: npx vitest run
     - id: Build-Vue
       uses: xRealNeon/VuePagesAction@1.0.1
       with:
