@@ -13,7 +13,7 @@ const { places, currentIndex, gameState, markerPosition } = storeToRefs(gameStat
 
 const currentPlace = computed(() => places.value[currentIndex.value])
 
-function isMarkerInsidePolygon() {
+function isMarkerInsidePolygon(): boolean {
     const x = markerPosition.value.lng, y = markerPosition.value.lat;
     if (currentPlace.value.geometry.type == "Polygon") {
         const polyPoints = currentPlace.value.geometry.coordinates[0];
@@ -26,10 +26,12 @@ function isMarkerInsidePolygon() {
             }
         }
         return false
+    } else {
+        throw new Error("Not implemented: Unsupported geometry type");
     }
 };
 
-function distanceMarkerToPolygon() {
+function distanceMarkerToPolygon(): number {
     const x = markerPosition.value.lng, y = markerPosition.value.lat;
     console.log("Marker position:", x, y)
     console.log("Current place:", currentPlace.value)
@@ -46,11 +48,20 @@ function distanceMarkerToPolygon() {
             }
         }
         return minDist
+    } else {
+        throw new Error("Not implemented: Unsupported geometry type");
     }
 };
 
 const guess = () => {
-    const isCorrect = isMarkerInsidePolygon()
+    let isCorrect = isMarkerInsidePolygon()
+    // Allow a small margin of error (0.1 degrees) for guessing
+    if (!isCorrect) {
+        const distanceError: number = distanceMarkerToPolygon()
+        if(distanceError < 0.1) {
+            isCorrect = true
+        }
+    }
     if (isCorrect) {
         if (currentIndex.value == (places.value.length - 1)) {
             gameState.value = "won"
@@ -58,7 +69,6 @@ const guess = () => {
             gameState.value = "correctRound"
         }
     } else {
-        console.log("Distance to polygon:", distanceMarkerToPolygon())
         gameState.value = "lose"
     }
 }
