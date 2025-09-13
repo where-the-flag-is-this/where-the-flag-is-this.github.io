@@ -14,12 +14,16 @@ from tqdm import tqdm
 
 random.seed(20)
 
+URL_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+}
+
 
 def get_geoshape_by_name(name_geoshape: str, extra_properties={}):
     try:
         url = f"https://commons.wikimedia.org/w/api.php?action=query&prop=revisions&rvslots=*&rvprop=content&format=json&titles=Data:{name_geoshape}.map&origin=*"
 
-        response = requests.get(url)
+        response = requests.get(url, headers=URL_HEADERS)
 
         data = response.json()["query"]["pages"]
         geoshape = json.loads(
@@ -38,10 +42,10 @@ def get_geoshape_by_name(name_geoshape: str, extra_properties={}):
 
 def get_geoshape_by_url(url: str, extra_properties={}):
     try:
-        r = requests.get(url)
+        r = requests.get(url, headers=URL_HEADERS)
         if r.status_code == 429:
             time.sleep(10)
-            r = requests.get(url)
+            r = requests.get(url, headers=URL_HEADERS)
         geoshape_dict = r.json()["data"]["features"][0]
         geoshape_dict["properties"] = {
             **geoshape_dict["properties"],
@@ -50,29 +54,30 @@ def get_geoshape_by_url(url: str, extra_properties={}):
 
         return geoshape_dict
     except:
-        print(r.status_code, url)
+        print(r.status_code, r.text, url)
         return
 
 
 query = WikiDataQueryResults(countries_information_query)
 
 country_df = query.load_as_dataframe()
-country_df = country_df.drop_duplicates(subset="countryLabel")
 
 # Get missing Kingdom Countries
 missing_df_list = []
 for missing_qid in [
-    "Q4628",
-    "Q35",
-    "Q223",
-    "Q55",
-]:  # Fareo islands, Denmark, Greenland, Netherlands
+    "Q4628",  # Fareo islands
+    "Q35",  # Denmark
+    "Q223",  # Greenland
+    "Q55",  # Netherlands
+    "Q712",  # Fiji
+]:
     missing_query = WikiDataQueryResults(get_missing_items_query(missing_qid))
     missing_df_list.append(missing_query.load_as_dataframe())
 missing_df = pd.concat(missing_df_list)
 missing_df = missing_df.rename(columns={"name": "countryLabel"})
 
 country_df = pd.concat([country_df, missing_df])
+country_df = country_df.drop_duplicates(subset="countryLabel")
 
 # + in the links does not work
 country_df["geoshapeUrl"] = country_df.geoshape.str.replace("+", "_")

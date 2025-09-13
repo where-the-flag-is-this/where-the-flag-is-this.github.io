@@ -4,6 +4,7 @@ import { computed } from "vue";
 
 import { storeToRefs } from 'pinia';
 import { useGameStateStore } from '../stores/gameState';
+import { distanceToPolygon, pointInPolygon } from '../utils/geometryUtils';
 import Score from "./score.vue"
 
 const gameStateStore = useGameStateStore()
@@ -12,19 +13,7 @@ const { places, currentIndex, gameState, markerPosition } = storeToRefs(gameStat
 
 const currentPlace = computed(() => places.value[currentIndex.value])
 
-function pointInPolygon(x: number, y: number, polyPoints: Array<Array<number>>) {
-    let inside = false;
-    for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
-        var xi = polyPoints[i][0], yi = polyPoints[i][1];
-        var xj = polyPoints[j][0], yj = polyPoints[j][1];
-        if (((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
-            inside = !inside
-        }
-    }
-
-    return inside;
-}
-function isMarkerInsidePolygon() {
+function isMarkerInsidePolygon(): boolean {
     const x = markerPosition.value.lng, y = markerPosition.value.lat;
     if (currentPlace.value.geometry.type == "Polygon") {
         const polyPoints = currentPlace.value.geometry.coordinates[0];
@@ -37,11 +26,42 @@ function isMarkerInsidePolygon() {
             }
         }
         return false
+    } else {
+        throw new Error("Not implemented: Unsupported geometry type");
+    }
+};
+
+function distanceMarkerToPolygon(): number {
+    // Returns distance in degrees
+    // This is a bit of bullshit given the earth is round and all, but should be fine for our purposes
+    const x = markerPosition.value.lng, y = markerPosition.value.lat;
+    if (currentPlace.value.geometry.type == "Polygon") {
+        const polyPoints = currentPlace.value.geometry.coordinates[0];
+        return distanceToPolygon(x, y, polyPoints)
+    } else if (currentPlace.value.geometry.type == "MultiPolygon") {
+        let minDist = Number.MAX_VALUE;
+        for (var i = 0; i < currentPlace.value.geometry.coordinates.length; i++) {
+            const polyPoints = currentPlace.value.geometry.coordinates[i][0];
+            const newDist = distanceToPolygon(x, y, polyPoints)
+            if (newDist < minDist) {
+                minDist = newDist
+            }
+        }
+        return minDist
+    } else {
+        throw new Error("Not implemented: Unsupported geometry type");
     }
 };
 
 const guess = () => {
-    const isCorrect = isMarkerInsidePolygon()
+    let isCorrect = isMarkerInsidePolygon()
+    // Allow a small margin of error (0.1 degrees) for guessing
+    if (!isCorrect) {
+        const distanceError: number = distanceMarkerToPolygon()
+        if(distanceError < 0.1) {
+            isCorrect = true
+        }
+    }
     if (isCorrect) {
         if (currentIndex.value == (places.value.length - 1)) {
             gameState.value = "won"
